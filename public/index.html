@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>ms-tts</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <style>
+    /* 定义颜色变量 */
+    :root {
+      --btn-bg: rgba(13, 47, 98, 0.6);
+      --btn-text: #dbeafe;
+      --btn-hover-bg: rgba(26, 86, 219, 0.7);
+      --btn-active-bg: rgba(30, 64, 175, 0.8);
+      --primary-gradient-start: rgba(37, 99, 235, 0.8);
+      --primary-gradient-end: rgba(30, 64, 175, 0.9);
+      --secondary-gradient-start: rgba(62, 67, 80, 0.5);
+      --secondary-gradient-end: rgba(62, 67, 80, 0.7);
+      --hover-primary-gradient-start: rgba(59, 130, 246, 0.9);
+      --hover-primary-gradient-end: rgba(37, 99, 235, 0.95);
+      --hover-secondary-gradient-start: rgba(30, 41, 59, 0.6);
+      --hover-secondary-gradient-end: rgba(30, 41, 59, 0.8);
+      --border-color: rgba(100, 116, 139, 0.2);
+      --highlight-color: rgba(59, 130, 246, 0.4);
+    }
+
+    /* 重新设计的按钮基础样式 */
+    .btn-neo {
+      position: relative;
+      overflow: hidden;
+      background: var(--btn-bg);
+      color: var(--btn-text);
+      border: none;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 6px;
+      padding: 0.6rem 1.2rem;
+      margin: 0;
+      line-height: normal;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+      box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
+        inset 0 -1px 0 0 rgba(0, 0, 0, 0.3);
+      text-decoration: none;
+      text-align: center;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* 按钮边框发光效果 */
+    .btn-neo::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 6px;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.8), rgba(147, 197, 253, 0.3), rgba(59, 130, 246, 0.1));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    /* 按钮悬浮效果 */
+    .btn-neo:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 0 rgba(255, 255, 255, 0.3),
+        0 0 10px 2px var(--highlight-color);
+      background: var(--btn-hover-bg);
+      color: #ffffff;
+    }
+
+    /* 按钮点击效果 */
+    .btn-neo:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.2),
+        inset 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+      background: var(--btn-active-bg);
+    }
+
+    /* 主按钮变体 */
+    .btn-neo-primary {
+      background: linear-gradient(180deg, var(--primary-gradient-start), var(--primary-gradient-end));
+      color: white;
+    }
+
+    .btn-neo-primary:hover {
+      background: linear-gradient(180deg, var(--hover-primary-gradient-start), var(--hover-primary-gradient-end));
+      box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.3),
+        0 0 20px 5px var(--highlight-color);
+    }
+
+    /* 次要按钮变体 */
+    .btn-neo-secondary {
+      background: linear-gradient(180deg, var(--secondary-gradient-start), var(--secondary-gradient-end));
+      color: rgba(255, 255, 255, 0.95);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-neo-secondary:hover {
+      background: linear-gradient(180deg, var(--hover-secondary-gradient-start), var(--hover-secondary-gradient-end));
+    }
+
+    .btn-neo-pulse {
+      box-shadow: 0 0 10px 2px var(--highlight-color);
+    }
+
+    /* 禁用状态 */
+    .btn-neo:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* 带图标的按钮 */
+    .btn-neo-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-neo-icon svg {
+      width: 18px;
+      height: 18px;
+      vertical-align: middle;
+    }
+
+    .btn-neo-icon:hover svg {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" target="_blank" href="https://github.com/libntdll/ms-tts">ms-tts</a>
+      <ul class="navbar-nav d-flex flex-row justify-content-between align-items-center">
+        <li class="nav-item">
+          <a class="github-button" href="https://github.com/libntdll/ms-tts" data-size="large"
+            data-show-count="true" aria-label="Star libntdll/ms-tts on GitHub">项目 Star</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container" style="margin-top: 30px;">
+    <form>
+      <div class="row">
+        <div class="col">
+          <label for="name" class="form-label">配置名称：</label>
+          <input name="name" type="text" class="form-control" value="大声朗读" />
+          <div class="form-text">在阅读APP中显示的名称。</div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <label for="voiceName" class="form-label">声音：</label>
+          <select name="voiceName" class="form-select" onchange="updateConfigName()">
+          </select>
+          <div class="form-text">声音列表加载可能有点慢，请耐心等待！</div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <label for="voiceFormat" class="form-label">音频格式：</label>
+          <select name="voiceFormat" class="form-select">
+            <option value="raw-16khz-16bit-mono-pcm">raw-16khz-16bit-mono-pcm</option>
+            <option value="raw-48khz-16bit-mono-pcm">raw-48khz-16bit-mono-pcm</option>
+            <option value="raw-8khz-8bit-mono-mulaw">raw-8khz-8bit-mono-mulaw</option>
+            <option value="raw-8khz-8bit-mono-alaw">raw-8khz-8bit-mono-alaw</option>
+            <option value="raw-16khz-16bit-mono-truesilk">raw-16khz-16bit-mono-truesilk</option>
+            <option value="raw-24khz-16bit-mono-truesilk">raw-24khz-16bit-mono-truesilk</option>
+            <option value="riff-16khz-16bit-mono-pcm">riff-16khz-16bit-mono-pcm</option>
+            <option value="riff-24khz-16bit-mono-pcm">riff-24khz-16bit-mono-pcm</option>
+            <option value="riff-48khz-16bit-mono-pcm">riff-48khz-16bit-mono-pcm</option>
+            <option value="riff-8khz-8bit-mono-mulaw">riff-8khz-8bit-mono-mulaw</option>
+            <option value="riff-8khz-8bit-mono-alaw">riff-8khz-8bit-mono-alaw</option>
+            <option value="audio-16khz-32kbitrate-mono-mp3">audio-16khz-32kbitrate-mono-mp3</option>
+            <option value="audio-16khz-64kbitrate-mono-mp3">audio-16khz-64kbitrate-mono-mp3</option>
+            <option value="audio-16khz-128kbitrate-mono-mp3">audio-16khz-128kbitrate-mono-mp3</option>
+            <option value="audio-24khz-48kbitrate-mono-mp3" selected>audio-24khz-48kbitrate-mono-mp3</option>
+            <option value="audio-24khz-96kbitrate-mono-mp3">audio-24khz-96kbitrate-mono-mp3</option>
+            <option value="audio-24khz-160kbitrate-mono-mp3">audio-24khz-160kbitrate-mono-mp3</option>
+            <option value="audio-48khz-96kbitrate-mono-mp3">audio-48khz-96kbitrate-mono-mp3</option>
+            <option value="audio-48khz-192kbitrate-mono-mp3">audio-48khz-192kbitrate-mono-mp3</option>
+            <option value="webm-16khz-16bit-mono-opus">webm-16khz-16bit-mono-opus</option>
+            <option value="webm-24khz-16bit-mono-opus">webm-24khz-16bit-mono-opus</option>
+            <option value="ogg-16khz-16bit-mono-opus">ogg-16khz-16bit-mono-opus</option>
+            <option value="ogg-24khz-16bit-mono-opus">ogg-24khz-16bit-mono-opus</option>
+            <option value="ogg-48khz-16bit-mono-opus">ogg-48khz-16bit-mono-opus</option>
+          </select>
+          <div class="form-text">
+            <p>可以调整音频的格式和质量。质量越高，生成的文件越大，对网速和流量的需求越高。请根据自己的情况选择。</p>
+            <p>如果出现 “Unsupported output format: XXX” 错误，表示不支持当前格式。</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label for="token" class="form-label">凭据(TOKEN):</label>
+            <input name="token" class="form-control" type="text" value="">
+            <div class="form-text">如果没有设置 TOKEN 环境变量请留空。</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label for="previewText" class="form-label">测试文本：</label>
+            <textarea name="previewText" class="form-control" rows="7" cols="">如果喜欢这个项目的话请点个 Star 吧。</textarea>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label for="rateSlider" class="form-label">语速调整：</label>
+            <input type="range" id="rateSlider" name="rateSlider" min="-0.5" max="1" step="0.05" value="0"
+              style="width: 80%;">
+            <span id="rateValue">0</span>
+          </div>
+        </div>
+        <div style="height:20px"></div>
+        <div class="row">
+          <div class="col-12 mb-3" d-flex align-items-center>
+            <button type="button" class="btn-neo btn-neo-secondary btn-neo-icon" id="previewButton" onclick="preview()">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                stroke-width="2" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+              </svg>
+              测试TTS
+            </button>
+            <button type="button" class="btn-neo btn-neo-secondary btn-neo-icon" id="updateTestContentButton"
+              onclick="getDailyNews()">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                stroke-width="2" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+              随机文本
+            </button>
+          </div>
+          <div class="col-12 mb-3">
+            <button type="button" class="btn-neo btn-neo-primary btn-neo-pulse"
+              onclick="createlegadoApp()">生成「阅读」语音引擎I</button>
+          </div>
+          <div class="col-12 mb-3">
+            <button type="button" class="btn-neo btn-neo-primary btn-neo-pulse"
+              onclick="createReaderServer()">生成「阅读」语音引擎II</button>
+          </div>
+          <div class="col-12 mb-3">
+            <button type="button" class="btn-neo btn-neo-primary btn-neo-pulse"
+              onclick="createiRead()">生成「爱阅记」语音引擎</button>
+          </div>
+          <div class="col-12 mb-3">
+            <button type="button" class="btn-neo btn-neo-primary btn-neo-pulse"
+              onclick="createSourceRead()">生成「源阅读」语音引擎</button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <p style="margin-bottom: 0.2rem;">1、<a href="https://github.com/gedoor/legado">阅读App版</a>: 支持手机扫码、一键导入。</p>
+            <p style="margin-bottom: 0.2rem;">2、<a href="https://github.com/hectorqin/reader">阅读Server版</a>:
+              支持手机扫码复制或直接复制，并导入。</p>
+            <p style="margin-bottom: 0.2rem;">3、爱阅记: 支持手机扫码，一键导入。</p>
+            <p style="margin-bottom: 0.2rem;">4、源阅读: 支持手机扫码，一键导入，或手动复制创建语音。</p>
+          </div>
+        </div>
+      </div>
+    </form>
+    <div style="height:50px"></div>
+  </div>
+
+  <div id="legadoAppModal" class="modal " tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">「阅读」链接</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="legadoAppQRCode" style="text-align:center"></div>
+          <div class="row">
+            <textarea id="legadoAppUrl" class="form-control" readonly rows="3" cols="2" value></textarea>
+          </div>
+          <div class="form-text">阅读APP: 支持复制链接->阅读APP->朗读->设置->朗读引擎->网络导入</div>
+          <div class="row" style="margin-top: 5px; margin-bottom: 10px;">
+            <button type="button" class="btn-neo btn-neo-primary btn-neo-pulse"
+              onclick="copyToClipboard('legadoAppUrl')">复制链接</button>
+          </div>
+          <div class="row" style="margin-top: 5px; margin-bottom: 10px;">
+            <a id="legadoImportButton" class="btn-neo btn-neo-primary btn-neo-pulse" href="">一键导入阅读APP</a>
+          </div>
+          <div class="row">
+            <textarea id="legadoApp" class="form-control" readonly rows="3" cols="2" value></textarea>
+          </div>
+          <div class="form-text">阅读服务器版: 支持复制链接->阅读页面->HttpTTS管理->添加</div>
+          <div class="row" style="margin-top: 5px; margin-bottom: 10px;">
+            <button type="button" class="btn-neo btn-neo-primary btn-neo-pulse"
+              onclick="copyToClipboard('legadoApp')">复制JSON</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="readerServerModal" class="modal " tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">「阅读」链接</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="readerServerQRCode" style="text-align:center"></div>
+          <div class="row">
+            <textarea id="readerServerUrl" class="form-control" readonly rows="3" cols="2" value></textarea>
+          </div>
+          <div class="form-text">阅读APP: 支持复制链接->阅读APP->朗读->设置->朗读引擎->网络导入</div>
+          <div class="row" style="margin-top: 5px; margin-bottom: 10px;">
+            <button type="button" class="btn-neo btn-neo-primary btn-neo-pulse"
+              onclick="copyToClipboard('readerServerUrl')">复制链接</button>
+          </div>
+          <div class="row" style="margin-top: 5px; margin-bottom: 10px;">
+            <a id="readerServerImportButton" class="btn-neo btn-neo-primary btn-neo-pulse" href="">一键导入阅读APP</a>
+          </div>
+          <div class="row">
+            <textarea id="readerServerJSON" class="form-control" readonly rows="3" cols="2" value></textarea>
+          </div>
+          <div class="form-text">阅读服务器版: 支持复制链接->阅读页面->HttpTTS管理->添加</div>
+          <div class="row" style="margin-top: 5px; margin-bottom: 10px;">
+            <button type="button" class="btn-neo btn-neo-primary btn-neo-pulse"
+              onclick="copyToClipboard('readerServerJSON')">复制JSON</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="iReadModal" class="modal " tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">「爱阅记」链接</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="iReadQRCode" style="text-align:center">
+          </div>
+          <div class="row">
+            <textarea id="iReadUrl" class="form-control" readonly rows="3" cols="2" value></textarea>
+          </div>
+          <div class="row" style="margin-top: 5px; margin-bottom: 10px;">
+            <a id="iReadImportButton" class="btn-neo btn-neo-primary btn-neo-pulse" href="">一键导入爱阅记</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="SourceReadModal" class="modal " tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">「源阅读」链接</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="SourceReadQRCode" style="text-align:center">
+          </div>
+          <div class="row">
+            <textarea id="SourceReadUrl" class="form-control" readonly rows="3" cols="2" value></textarea>
+          </div>
+          <div class="form-text">支持复制链接->源阅读APP->我的->语音管理->创建语音</div>
+          <div class="row" style="margin-top: 5px; margin-bottom: 10px;">
+            <button type="button" class="btn-neo btn-neo-primary btn-neo-pulse"
+              onclick="copyToClipboard('SourceReadUrl')">复制链接</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-svg@1.1.0/lib/qrcode.min.js"></script>
+  <script>
+    let voices = [];
+    const cacheKey = 'voicesCache';
+    const cacheDuration = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+    async function loadVoicesFromCache() {
+      const cache = JSON.parse(localStorage.getItem(cacheKey));
+      if (cache && (Date.now() - cache.timestamp < cacheDuration)) {
+        refreshVoice(cache.data);
+        return true;
+      }
+      return false;
+    }
+
+    function saveVoicesToCache(voices) {
+      const cache = {
+        timestamp: Date.now(),
+        data: voices
+      };
+      localStorage.setItem(cacheKey, JSON.stringify(cache));
+    }
+
+    // index.html
+    async function fetchVoices() {
+      try {
+        const response = await fetch('https://speech.platform.bing.com/consumer/speech/synthesize/readaloud/voices/list?trustedclienttoken=6A5AA1D4EAFF4E9FB37E23D68491D6F4');
+
+        if (response.status !== 200) {
+          const text = await response.text();
+          throw new Error(text);
+        }
+
+        const data = await response.json();
+        refreshVoice(data);
+        saveVoicesToCache(data);
+      } catch (reason) {
+        alert(reason);
+      }
+    }
+
+    const voiceNameMap = {
+      'wuu-CN-XiaotongNeural': '晓彤-吴语',
+      'wuu-CN-YunzheNeural': '云哲-吴语',
+      'yue-CN-XiaoMinNeural': '晓敏-粤语',
+      'yue-CN-YunSongNeural': '云松-粤语',
+      'zh-CN-XiaoxiaoNeural': '晓晓',
+      'zh-CN-YunyangNeural': '云扬',
+      'zh-CN-XiaochenNeural': '晓辰',
+      'zh-CN-XiaohanNeural': '晓涵',
+      'zh-CN-XiaomoNeural': '晓墨',
+      'zh-CN-XiaoqiuNeural': '晓秋',
+      'zh-CN-XiaoruiNeural': '晓睿',
+      'zh-CN-XiaoshuangNeural': '晓双',
+      'zh-CN-XiaoxuanNeural': '晓萱',
+      'zh-CN-XiaoyanNeural': '晓颜',
+      'zh-CN-XiaoyouNeural': '晓悠',
+      'zh-CN-YunxiNeural': '云希',
+      'zh-CN-YunyeNeural': '云野',
+      'zh-CN-XiaomengNeural': '晓梦',
+      'zh-CN-XiaoyiNeural': '晓伊',
+      'zh-CN-XiaozhenNeural': '晓甄',
+      'zh-CN-YunfengNeural': '云枫',
+      'zh-CN-YunhaoNeural': '云皓',
+      'zh-CN-YunjianNeural': '云健',
+      'zh-CN-YunxiaNeural': '云夏',
+      'zh-CN-YunzeNeural': '云泽',
+      'zh-CN-henan-YundengNeural': '云登-河南',
+      'zh-CN-liaoning-XiaobeiNeural': '晓北-辽宁',
+      'zh-CN-shaanxi-XiaoniNeural': '晓妮-陕西',
+      'zh-CN-shandong-YunxiangNeural': '云翔-山东',
+      'zh-CN-sichuan-YunxiNeural': '云希-四川',
+      'zh-HK-HiuMaanNeural': '曉曼-香港',
+      'zh-HK-HiuGaaiNeural': '曉佳-香港',
+      'zh-HK-WanLungNeural': '雲龍-香港',
+      'zh-TW-HsiaoChenNeural': '曉臻-台湾',
+      'zh-TW-HsiaoYuNeural': '曉雨-台湾',
+      'zh-TW-YunJheNeural': '雲哲-台湾'
+    };
+
+    const genderMap = {
+      'Female': '女声',
+      'Male': '男声'
+    };
+
+    function refreshVoice(data) {
+      let voiceElement = document.getElementsByName('voiceName')[0];
+      voiceElement.innerHTML = ''; // Corrected from innerHTMl to innerHTML
+      data.forEach(item => {
+        let option = document.createElement('option');
+        option.value = item['ShortName'];
+        option.innerText = voiceNameMap[item['ShortName']] ? `${voiceNameMap[item['ShortName']]} (${genderMap[item['Gender']]})` : `${item['ShortName']} (${item['Gender']})`;
+        if (item['ShortName'] == 'zh-CN-YunxiNeural') {
+          option.selected = true;
+        }
+        voiceElement.append(option);
+      });
+      updateConfigName();
+    }
+
+    function updateConfigName() {
+      let voice = document.getElementsByName('voiceName')[0].value;
+      document.getElementsByName('name')[0].value = '大声朗读(' + voice + ')';
+    }
+
+    // 获取滑块和显示值的元素
+    rateSlider.addEventListener('input', function () {
+      rateValue.textContent = this.value;
+    });
+
+    // 自动调整 textarea 的高度
+    function autoResizeTextarea(textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    }
+
+    // 解析数据的函数
+    function parseData(data, topic) {
+      if (!data[topic]) {
+        return '';
+      }
+      let msg = '';
+      for (const [key, value] of Object.entries(data[topic])) {
+        if (key === 'content') {
+          msg += value.join('') + '\n';
+        } else if (value && typeof value !== 'boolean' && !(/[a-z]/i.test(String(value)))) {
+          msg += String(value) + '\n';
+        }
+      }
+      return msg;
+    }
+
+    async function getDailyNews() {
+      let msg = "";
+      try {
+        const response = await fetch('https://news.topurl.cn/api');
+        if (response.status === 200) {
+          const res = await response.json();
+          if (res.code === 200) {
+            const data = res.data;
+            if (data.newsList) {
+              msg += "每日新闻:\n";
+              data.newsList.slice(0, 5).forEach((news, index) => {
+                const no = String(index + 1).padStart(2, '0');
+                msg += `${no}. ${news.title}\n`;
+              });
+            }
+          }
+        }
+      } catch { }
+
+      const previewTextarea = document.querySelector('textarea[name="previewText"]');
+      previewTextarea.value = msg;
+      // autoResizeTextarea(previewTextarea);
+      return msg;
+    }
+
+    async function getPoemText() {
+      const topics = ['poem', 'sentence', 'phrase'];
+      const randomTopic = topics[Math.floor(Math.random() * topics.length)];
+
+      try {
+        const response = await fetch('https://news.topurl.cn/api');
+        const res = await response.json();
+        if (res.code === 200) {
+          const data = res.data;
+          return parseData(data, randomTopic);
+        }
+      } catch { }
+      return '';
+    }
+
+    async function updatePoem() {
+      const poemText = await getPoemText();
+      const previewTextarea = document.querySelector('textarea[name="previewText"]');
+      if (poemText) {
+        previewTextarea.value = poemText;
+        // autoResizeTextarea(previewTextarea);
+      }
+    }
+
+    function copyToClipboard(elementId) {
+      const textArea = document.getElementById(elementId);
+      if (!textArea || !textArea.value) return;
+
+      textArea.select();
+      try {
+        document.execCommand('copy');
+      } catch { }
+    };
+
+    function createSSML(text, voiceName, rate = '0%') {
+      text = text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('\'', '&apos;').replaceAll('"', '&quot;');
+      let ssml = `
+        <speak xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xmlns:emo="http://www.w3.org/2009/10/emotionml" version="1.0" xml:lang="en-US">
+          <voice name="${voiceName}">
+            <prosody rate="${rate}" pitch="0%">
+              ${text}
+            </prosody>
+          </voice>
+        </speak>
+      `;
+
+      return ssml;
+    }
+
+    // 测试
+    function preview() {
+      let headers = { 'Content-Type': 'text/plain' };
+      let voiceName = document.getElementsByName('voiceName')[0].value;
+      let voiceFormat = document.getElementsByName('voiceFormat')[0].value;
+      let token = document.getElementsByName('token')[0].value;
+      let previewText = document.getElementsByName('previewText')[0].value;
+      let rate = (parseFloat(rateSlider.value) * 100) + '%';
+      let ssml = createSSML(previewText, voiceName, rate)
+      if (token) {
+        headers['Authorization'] = 'Bearer ' + token;
+      }
+
+      headers['Format'] = voiceFormat;
+
+      let button = document.getElementById('previewButton');
+      button.disabled = true;
+      let ctx = new AudioContext();
+      fetch('/api/ra', {
+        method: 'post',
+        headers: headers,
+        body: ssml
+      }).then(response => {
+        if (response.status == 200) {
+          return response.arrayBuffer()
+        } else if (response.status == 401) {
+          throw '无效的密钥';
+        } else {
+          return response.text().then(text => Promise.reject(text));
+        }
+      }).then(arrayBuffer => ctx.decodeAudioData(arrayBuffer))
+        .then(audio => {
+          let player = ctx.createBufferSource();
+          player.buffer = audio;
+          player.connect(ctx.destination);
+          player.start(ctx.currentTime);
+        })
+        .catch(reason => {
+          alert(reason);
+        })
+        .finally(() => {
+          button.disabled = false;
+        });
+    }
+
+    // 阅读I
+    function createlegadoApp() {
+      let voiceSelect = document.getElementsByName('voiceName')[0];
+      let name = voiceSelect.options[voiceSelect.selectedIndex].innerText;
+      let voiceName = document.getElementsByName('voiceName')[0].value;
+      let voiceFormat = document.getElementsByName('voiceFormat')[0].value;
+      let token = document.getElementsByName('token')[0].value;
+      let previewText = document.getElementsByName('previewText')[0].value;
+      let url = window.location.protocol + '//' + window.location.host + '/api/legado?api=' + encodeURIComponent(window.location.protocol + '//' + window.location.host + '/api/ra')
+        + '&name=' + encodeURIComponent(name)
+        + '&voiceName=' + encodeURIComponent(voiceName)
+        + '&voiceFormat=' + encodeURIComponent(voiceFormat)
+        + '&token=' + encodeURIComponent(token);
+
+      let timestamp = new Date().getTime();
+      let ssmlTemplate = `<speak xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xmlns:emo="http://www.w3.org/2009/10/emotionml" version="1.0" xml:lang="en-US"><voice name="${voiceName}"><prosody rate="{{(speakSpeed - 15) * 2}}%" pitch="0%">{{String(speakText).replace(/&/g, '&amp;').replace(/\"/g, '&quot;').replace(/'/g, '&apos;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}}</prosody></voice></speak>`;
+      let requestBody = JSON.stringify({
+        method: "POST",
+        body: ssmlTemplate
+      });
+      let post_url = `${window.location.protocol}//${window.location.host}/api/ra,${requestBody}`;
+      let jsonData = {
+        "id": timestamp,
+        "name": name,
+        "url": post_url
+      };
+      let jsonString = JSON.stringify(jsonData, null, 2);
+      let svg = new QRCode(url).svg();
+      let modal = new bootstrap.Modal(document.getElementById('legadoAppModal'))
+      modal.show();
+      document.getElementById('legadoAppQRCode').innerHTML = svg;
+      document.getElementById('legadoAppUrl').value = url;
+      document.getElementById('legadoApp').value = jsonString;
+      document.getElementById('legadoImportButton').href = 'legado://import/httpTTS?src=' + encodeURIComponent(url);
+
+      const legadoAppUrlTextarea = document.getElementById('legadoAppUrl');
+      autoResizeTextarea(legadoAppUrlTextarea);
+      const legadoAppJSONTextarea = document.getElementById('legadoApp');
+      autoResizeTextarea(legadoAppJSONTextarea);
+    }
+
+    // 阅读II
+    function createReaderServer() {
+      let voiceSelect = document.getElementsByName('voiceName')[0];
+      let name = voiceSelect.options[voiceSelect.selectedIndex].innerText;
+      let voiceName = document.getElementsByName('voiceName')[0].value;
+      let voiceFormat = document.getElementsByName('voiceFormat')[0].value;
+      let token = document.getElementsByName('token')[0].value;
+      let previewText = document.getElementsByName('previewText')[0].value;
+
+      let url = window.location.protocol + '//' + window.location.host + '/api/reader'
+        + '?api=' + encodeURIComponent(window.location.protocol + '//' + window.location.host + '/api/tts')
+        + '&name=' + encodeURIComponent(name)
+        + '&voiceName=' + encodeURIComponent(voiceName)
+        + '&voiceFormat=' + encodeURIComponent(voiceFormat)
+        + '&token=' + encodeURIComponent(token);
+
+      let svg = new QRCode(url).svg();
+      let timestamp = new Date().getTime();
+      let reader_url = window.location.protocol + '//' + window.location.host + '/api/tts?'
+        + '&voiceName=' + voiceName
+        + '&voiceFormat=' + voiceFormat
+        + "&rate={{(speakSpeed-15)*2}}%&pitch=0%&text={{String(speakText).replace(/&/g,'&amp;').replace(/\"/g,'&quot;').replace(/'/g,'&apos;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}}";
+      let jsonData = {
+        "id": timestamp,
+        "name": name,
+        "url": reader_url
+      };
+      let jsonString = JSON.stringify(jsonData, null, 2);
+      let modal = new bootstrap.Modal(document.getElementById('readerServerModal'));
+      modal.show();
+
+      document.getElementById('readerServerQRCode').innerHTML = svg;
+      document.getElementById('readerServerUrl').value = url;
+      document.getElementById('readerServerJSON').value = jsonString;
+      document.getElementById('readerServerImportButton').href = 'legado://import/httpTTS?src=' + encodeURIComponent(url);
+
+      const ReaderUrlTextarea = document.getElementById('readerServerUrl');
+      autoResizeTextarea(ReaderUrlTextarea);
+      const ReadJSONTextarea = document.getElementById('readerServerJSON');
+      autoResizeTextarea(ReadJSONTextarea);
+    }
+
+    // 爱阅记
+    function createiRead() {
+      let voiceSelect = document.getElementsByName('voiceName')[0];
+      let name = voiceSelect.options[voiceSelect.selectedIndex].innerText;
+      let voiceName = document.getElementsByName('voiceName')[0].value;
+      let voiceFormat = document.getElementsByName('voiceFormat')[0].value;
+      let token = document.getElementsByName('token')[0].value;
+      let previewText = document.getElementsByName('previewText')[0].value;
+
+      let url = window.location.protocol + '//' + window.location.host + '/api/ireadnote'
+        + '?api=' + encodeURIComponent(window.location.protocol + '//' + window.location.host + '/api/tts')
+        + '&name=' + encodeURIComponent(name)
+        + '&voiceName=' + encodeURIComponent(voiceName)
+        + '&voiceFormat=' + encodeURIComponent(voiceFormat)
+        + '&token=' + encodeURIComponent(token);
+
+      const directUrl = 'iReadNote://import/itts=' + url;
+      let svg = new QRCode(directUrl).svg();
+      let modal = new bootstrap.Modal(document.getElementById('iReadModal'))
+      modal.show();
+      document.getElementById('iReadQRCode').innerHTML = svg;
+      document.getElementById('iReadUrl').value = url;
+      document.getElementById('iReadImportButton').href = directUrl;
+
+      const iReadTextarea = document.getElementById('iReadUrl');
+      autoResizeTextarea(iReadTextarea);
+    }
+
+    // 源阅读
+    function createSourceRead() {
+      let voiceSelect = document.getElementsByName('voiceName')[0];
+      let name = voiceSelect.options[voiceSelect.selectedIndex].innerText;
+      let voiceName = document.getElementsByName('voiceName')[0].value;
+      let voiceFormat = document.getElementsByName('voiceFormat')[0].value;
+      let token = document.getElementsByName('token')[0].value;
+      let previewText = document.getElementsByName('previewText')[0].value;
+
+      let url = window.location.protocol + '//' + window.location.host + '/api/source_reader'
+        + '?api=' + encodeURIComponent(window.location.protocol + '//' + window.location.host + '/api/tts')
+        + '&name=' + encodeURIComponent(name)
+        + '&voiceName=' + encodeURIComponent(voiceName)
+        + '&voiceFormat=' + encodeURIComponent(voiceFormat)
+        + '&token=' + encodeURIComponent(token);
+      let svg = new QRCode(url).svg();
+
+      let source_url = window.location.protocol + '//' + window.location.host + '/api/tts?'
+        + '&voiceName=' + voiceName
+        + '&voiceFormat=' + voiceFormat
+        + "&rate={{speakSpeed}}%&pitch=0%&text={{String(speakText).replace(/&/g,'&amp;').replace(/\"/g,'&quot;').replace(/'/g,'&apos;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}}";
+      let modal = new bootstrap.Modal(document.getElementById('SourceReadModal'));
+      modal.show();
+      document.getElementById('SourceReadQRCode').innerHTML = svg;
+      document.getElementById('SourceReadUrl').value = source_url;
+
+      const SourceReadTextarea = document.getElementById('SourceReadUrl');
+      autoResizeTextarea(SourceReadTextarea);
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!await loadVoicesFromCache()) {
+        await fetchVoices();
+      }
+    });
+  </script>
+</body>
+
+</html>

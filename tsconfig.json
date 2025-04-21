@@ -1,0 +1,18 @@
+{
+	"compilerOptions": {
+		"moduleResolution": "node",
+		"module": "commonjs",
+		"target": "ES2016",
+		"declaration": true,
+		"outDir": "dist",
+		"sourceMap": true,
+		"skipLibCheck": true
+	},
+	"typedocOptions": {
+		"entryPoints": [
+			"app.ts"
+		],
+		"out": "docs",
+		"excludePrivate": true
+	}
+}
