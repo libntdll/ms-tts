@@ -2,8 +2,8 @@ name: Docker Image
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ master ]
+  #push:
+    #branches: [ master ]
 
 env: 
   DOCKER_REPOSITORY: libntdll/ms-tts
