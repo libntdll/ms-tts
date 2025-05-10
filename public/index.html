@@ -470,9 +470,9 @@
       'zh-HK-HiuMaanNeural': '曉曼-香港',
       'zh-HK-HiuGaaiNeural': '曉佳-香港',
       'zh-HK-WanLungNeural': '雲龍-香港',
-      'zh-TW-HsiaoChenNeural': '曉臻-台湾',
-      'zh-TW-HsiaoYuNeural': '曉雨-台湾',
-      'zh-TW-YunJheNeural': '雲哲-台湾'
+      'zh-TW-HsiaoChenNeural': '曉臻-臺灣',
+      'zh-TW-HsiaoYuNeural': '曉雨-臺灣',
+      'zh-TW-YunJheNeural': '雲哲-臺灣'
     };
 
     const genderMap = {
@@ -589,7 +589,7 @@
     function createSSML(text, voiceName, rate = '0%') {
       text = text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('\'', '&apos;').replaceAll('"', '&quot;');
       let ssml = `
-        <speak xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xmlns:emo="http://www.w3.org/2009/10/emotionml" version="1.0" xml:lang="en-US">
+        <speak xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xmlns:emo="http://www.w3.org/2009/10/emotionml" version="1.0" xml:lang="zh-CN">
           <voice name="${voiceName}">
             <prosody rate="${rate}" pitch="0%">
               ${text}
@@ -661,7 +661,7 @@
         + '&token=' + encodeURIComponent(token);
 
       let timestamp = new Date().getTime();
-      let ssmlTemplate = `<speak xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xmlns:emo="http://www.w3.org/2009/10/emotionml" version="1.0" xml:lang="en-US"><voice name="${voiceName}"><prosody rate="{{(speakSpeed - 15) * 2}}%" pitch="0%">{{String(speakText).replace(/&/g, '&amp;').replace(/\"/g, '&quot;').replace(/'/g, '&apos;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}}</prosody></voice></speak>`;
+      let ssmlTemplate = `<speak xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xmlns:emo="http://www.w3.org/2009/10/emotionml" version="1.0" xml:lang="zh-CN"><voice name="${voiceName}"><prosody rate="{{(speakSpeed - 15) * 2}}%" pitch="0%">{{String(speakText).replace(/&/g, '&amp;').replace(/\"/g, '&quot;').replace(/'/g, '&apos;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}}</prosody></voice></speak>`;
       let requestBody = JSON.stringify({
         method: "POST",
         body: ssmlTemplate
