@@ -661,7 +661,7 @@
         + '&token=' + encodeURIComponent(token);
 
       let timestamp = new Date().getTime();
-      let ssmlTemplate = `<speak xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xmlns:emo="http://www.w3.org/2009/10/emotionml" version="1.0" xml:lang="zh-CN"><voice name="${voiceName}"><prosody rate="{{(speakSpeed - 15) * 2}}%" pitch="0%">{{String(speakText).replace(/&/g, '&amp;').replace(/\"/g, '&quot;').replace(/'/g, '&apos;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}}</prosody></voice></speak>`;
+      let ssmlTemplate = `<speak xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xmlns:emo="http://www.w3.org/2009/10/emotionml" version="1.0" xml:lang="zh-CN"><voice name="${voiceName}"><prosody rate="{{(speakSpeed - 10) * 2}}%" pitch="0%">{{String(speakText).replace(/&/g, '&amp;').replace(/\"/g, '&quot;').replace(/'/g, '&apos;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}}</prosody></voice></speak>`;
       let requestBody = JSON.stringify({
         method: "POST",
         body: ssmlTemplate
@@ -708,7 +708,7 @@
       let reader_url = window.location.protocol + '//' + window.location.host + '/api/tts?'
         + '&voiceName=' + voiceName
         + '&voiceFormat=' + voiceFormat
-        + "&rate={{(speakSpeed-15)*2}}%&pitch=0%&text={{String(speakText).replace(/&/g,'&amp;').replace(/\"/g,'&quot;').replace(/'/g,'&apos;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}}";
+        + "&rate={{(speakSpeed-10)*2}}%&pitch=0%&text={{String(speakText).replace(/&/g,'&amp;').replace(/\"/g,'&quot;').replace(/'/g,'&apos;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}}";
       let jsonData = {
         "id": timestamp,
         "name": name,

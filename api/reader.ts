@@ -11,7 +11,7 @@ module.exports = async (request: Request, response: Response) => {
     const config = [{
         id: Date.now(),
         name: name,
-        url: `${api}?&voiceName=${voiceName}&voiceFormat=${voiceFormat}&rate={{(speakSpeed-15)*2}}%&pitch=0%&text={{String(speakText).replace(/&/g,'&amp;').replace(/\"/g,'&quot;').replace(/'/g,'&apos;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}}`
+        url: `${api}?&voiceName=${voiceName}&voiceFormat=${voiceFormat}&rate={{(speakSpeed-10)*2}}%&pitch=0%&text={{String(speakText).replace(/&/g,'&amp;').replace(/\"/g,'&quot;').replace(/'/g,'&apos;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}}`
     }];
     response.status(200).json(config);
 };

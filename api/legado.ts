@@ -40,7 +40,7 @@ module.exports = async (request: Request, response: Response) => {
     (styleName
       ? `<mstts:express-as style="${styleName}" styledegree="${styleDegree}">`
       : ``) +
-    `<prosody rate="{{(speakSpeed - 15) * 2}}%" pitch="0%">` +
+    `<prosody rate="{{(speakSpeed - 10) * 2}}%" pitch="0%">` +
     `{{String(speakText).replace(/&/g, '&amp;').replace(/\"/g, '&quot;').replace(/'/g, '&apos;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}}` +
     `</prosody>` +
     (styleName ? ` </mstts:express-as>` : ``) +
